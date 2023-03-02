@@ -1,29 +1,23 @@
-mock:
-  - "api1":
-      methods: [GET, POST]
-      delay:
-        unit: millisecond
-        type: fixed
-        value: 100
-      response:
-        {
-          "test": 123
-        }
-  - "api2":
-      methods: [GET]
-      delay:
-        unit: millisecond
-        type: range
-        range: [1000, 5000]
-      response:
-        {
-          "foo": 42,
-          "bar": "elephant",
-          "baz": [1, 2, 4, 8, 16, 32],
-        }
-  - "randomizer":
-      methods: [GET]
-      response:
-        {
-          "random_value": "$rand_str(alphanum, 6)"
-        }
+port: 3333
+targets:
+  api1:
+    methods: [GET, POST]
+    delay: 100 # in milliseconds
+    response:
+      {
+        "test": 123
+      }
+  api2:
+    methods: [GET]
+      # TODO: Add ranges for delay.
+      # For now, delay only takes a fixed number of milliseconds to sleep
+      # delay: "1000ms..5000ms"
+    delay: 5000
+    response:
+      {
+        "foo": 42,
+        "bar": "elephant",
+        "baz": [1, 2, 4, 8, 16, 32],
+      }
+  bad_api:
+    methods: [TEST]
