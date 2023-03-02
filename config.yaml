@@ -1,0 +1,29 @@
+mock:
+  - "api1":
+      methods: [GET, POST]
+      delay:
+        unit: millisecond
+        type: fixed
+        value: 100
+      response:
+        {
+          "test": 123
+        }
+  - "api2":
+      methods: [GET]
+      delay:
+        unit: millisecond
+        type: range
+        range: [1000, 5000]
+      response:
+        {
+          "foo": 42,
+          "bar": "elephant",
+          "baz": [1, 2, 4, 8, 16, 32],
+        }
+  - "randomizer":
+      methods: [GET]
+      response:
+        {
+          "random_value": "$rand_str(alphanum, 6)"
+        }
