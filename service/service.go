@@ -2,9 +2,9 @@ package service
 
 import (
     "encoding/json"
-    "fmt"
     "log"
     "net/http"
+    "os"
     "strconv"
     "time"
 )
@@ -12,33 +12,37 @@ import (
 type dict map[string]any
 type HandlerFunc = func(http.ResponseWriter, *http.Request)
 
-type MockServer struct {
-    config   Config
+type MockService struct {
+    config Config
+    logger *log.Logger
 }
 
-func NewMockServer(config Config) MockServer {
+func NewMockService(config Config) MockService {
+    const loggerPrefix = "[mockingbird] | "
+    logger := log.New(os.Stdout, loggerPrefix, log.LstdFlags | log.Lmsgprefix)
+
+    m := MockService{config, logger}
+    m.logger.Println("Creating Mock Service")
+    m.logger.Println("=> Generating handlers for API(s)...")
+
     for name, target := range config.Targets {
-        handler := createHandlerFunc(name, target)
+        handler := m.createHandlerFunc(name, target)
         http.HandleFunc("/" + name, handler)
     }
 
-    m := MockServer{
-        config:   config,
-    }
     return m
 }
 
-func (s *MockServer) Listen() {
-    fmt.Println("=> Running mock service...")
-    port := ":" + strconv.Itoa(int(s.config.Port))
-    fmt.Println("Listening on port:", port)
-    log.Fatal(http.ListenAndServe(port, nil))
+func (m *MockService) Mock() {
+    m.logger.Println("=> Running mock service...")
+    port := ":" + strconv.Itoa(int(m.config.Port))
+    m.logger.Println("Listening on port:", port)
+    m.logger.Fatal(http.ListenAndServe(port, nil))
 }
 
-func createHandlerFunc(name string, target MockTarget) HandlerFunc {
-    fmt.Println(" * Creating handler for endpoint: ", name)
-    handler := func(w http.ResponseWriter, r *http.Request) {
-        log.Print("got request for /", name)
+func (m *MockService) createHandlerFunc(name string, target MockTarget) HandlerFunc {
+    return func(w http.ResponseWriter, r *http.Request) {
+        m.logger.Print("got request for /", name)
         accept := false
         for _, method := range target.Methods {
             if r.Method == method {
@@ -65,13 +69,9 @@ func createHandlerFunc(name string, target MockTarget) HandlerFunc {
         delay := time.Duration(target.Delay) * time.Millisecond
         time.Sleep(delay)
 
-        err := resp.Encode(dict{
-            "statusCode": http.StatusOK,
-            "response": target.Response,
-        })
+        err := resp.Encode(target.Response)
         if err != nil {
             panic(err)
         }
     }
-    return handler
 }

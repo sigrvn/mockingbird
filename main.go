@@ -9,8 +9,6 @@ import (
     "gopkg.in/yaml.v2"
 )
 
-var config service.Config
-
 func main() {
     //liveReload := flag.Bool("live-reload", false, "Reload the server on config change")
     flag.Parse()
@@ -27,6 +25,7 @@ func main() {
         os.Exit(1)
     }
 
+    var config service.Config
     if err = yaml.Unmarshal(configData, &config); err != nil {
         fmt.Printf("mockingbird error: %s\n", err.Error())
         os.Exit(1)
@@ -37,6 +36,6 @@ func main() {
         os.Exit(1)
     }
 
-    server := service.NewMockServer(config)
-    server.Listen()
+    m := service.NewMockService(config)
+    m.Mock()
 }
