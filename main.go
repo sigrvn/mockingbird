@@ -21,7 +21,6 @@ func main() {
     }
 
     configFile := flag.Args()[0]
-    // TODO: Allow the config filename to be named something different and be passed in via cmdline args
     configData, err := os.ReadFile(configFile)
     if err != nil {
         fmt.Printf("mockingbird error: %s\n", err.Error())
