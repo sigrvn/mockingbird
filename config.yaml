@@ -20,5 +20,5 @@ targets:
         "bar": "elephant",
         "baz": [1, 2, 4, 8, 16, 32],
       }
-      # bad_api:
-      #   methods: [TEST]
+  bad_api:
+    methods: [TEST]

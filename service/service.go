@@ -42,7 +42,7 @@ func (m *MockService) Mock() {
 
 func (m *MockService) createHandlerFunc(name string, target MockTarget) HandlerFunc {
     return func(w http.ResponseWriter, r *http.Request) {
-        m.logger.Print("got request for /", name)
+        m.logger.Printf("got %s request for /%s\n", r.Method, name)
         accept := false
         for _, method := range target.Methods {
             if r.Method == method {
@@ -66,8 +66,10 @@ func (m *MockService) createHandlerFunc(name string, target MockTarget) HandlerF
             return
         }
 
-        delay := time.Duration(target.Delay) * time.Millisecond
-        time.Sleep(delay)
+        if target.Delay > 0 {
+            delay := time.Duration(target.Delay) * time.Millisecond
+            time.Sleep(delay)
+        }
 
         err := resp.Encode(target.Response)
         if err != nil {

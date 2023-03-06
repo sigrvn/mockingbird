@@ -6,9 +6,9 @@ import (
 )
 
 type MockTarget struct {
-    Methods  []string       `yaml:"methods"`
-    Delay    int            `yaml:"delay"`
-    Response dict `yaml:"response"`
+    Methods  []string   `yaml:"methods"`
+    Delay    int        `yaml:"delay"`
+    Response dict       `yaml:"response"`
 }
 
 type Config struct {
